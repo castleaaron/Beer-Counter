@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "deploy": "gh-pages -d build"
   },
   "dependencies": {
     "@aws-sdk/credential-providers": "latest",
@@ -50,6 +51,7 @@
     "embla-carousel-react": "8.5.1",
     "framer-motion": "latest",
     "gcp-metadata": "latest",
+    "gh-pages": "^6.3.0",
     "input-otp": "1.4.1",
     "kerberos": "latest",
     "lucide-react": "^0.454.0",
