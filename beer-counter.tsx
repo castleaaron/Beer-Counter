@@ -1,6 +1,6 @@
 "use client"
 
-import type React from "react"
+import React from "react"
 
 import { useState, useEffect } from "react"
 import {
@@ -139,6 +139,34 @@ export default function BeerCounter() {
     // Open camera to take a photo first
     setSelectedPerson(person)
     setIsCameraOpen(true)
+
+    // Set a timeout to handle cases where camera might not initialize
+    setTimeout(() => {
+      if (isCameraOpen && selectedPerson === person) {
+        // If camera is still open after 5 seconds, show a fallback option
+        toast({
+          title: "Camera not working?",
+          description: (
+            <div className="flex flex-col gap-2">
+              <p>If your camera isn't working, you can continue without a photo.</p>
+              <Button
+                variant="outline"
+                onClick={() => {
+                  // Use a placeholder image instead
+                  const placeholderImage =
+                    "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjIwMCIgaGVpZ2h0PSIyMDAiIGZpbGw9IiNGNUNDNjIiLz48cGF0aCBkPSJNODAgNjBDODAgNTcuNzkxIDgxLjc5MSA1NiA4NCA1Nkg5NkMxMDIuNjI3IDU2IDEwOCA2MS4zNzMgMTA4IDY4VjEzNkMxMDggMTQyLjYyNyAxMDIuNjI3IDE0OCA5NiAxNDhIODRDODEuNzkxIDE0OCA4MCAxNDYuMjA5IDgwIDE0NFYxMzZDODAgMTMzLjc5MSA4MS43OTEgMTMyIDg0IDEzMkg5NlY2OEg4NFY2MFoiIGZpbGw9IiNGRkZGRkYiLz48cGF0aCBkPSJNMTIwIDY4QzEyMCA2MS4zNzMgMTI1LjM3MyA1NiAxMzIgNTZIMTQ0QzE0Ni4yMDkgNTYgMTQ4IDU3Ljc5MSAxNDggNjBWNjhDMTQ4IDcwLjIwOSAxNDYuMjA5IDcyIDE0NCA3MkgxMzJWOTZIMTQ0QzE0Ni4yMDkgOTYgMTQ4IDk3Ljc5MSAxNDggMTAwVjEwOEMxNDggMTEwLjIwOSAxNDYuMjA5IDExMiAxNDQgMTEySDEzMlYxMzZIMTQ0QzE0Ni4yMDkgMTM2IDE0OCAxMzcuNzkxIDE0OCAxNDBWMTQ4QzE0OCAxNTAuMjA5IDE0Ni4yMDkgMTUyIDE0NCAxNTJIMTMyQzEyNS4zNzMgMTUyIDEyMCAxNDYuNjI3IDEyMCAxNDBWNjhaIiBmaWxsPSIjRkZGRkZGIi8+PHBhdGggZD0iTTUyIDEwMEM1MiA5Ny43OTEgNTMuNzkxIDk2IDU2IDk2SDY4QzcwLjIwOSA5NiA3MiA5Ny43OTEgNzIgMTAwVjE0NEM3MiAxNDYuMjA5IDcwLjIwOSAxNDggNjggMTQ4SDU2QzUzLjc5MSAxNDggNTIgMTQ2LjIwOSA1MiAxNDRWMTAwWiIgZmlsbD0iI0ZGRkZGRiIvPjxwYXRoIGQ9Ik01MiA2MEM1MiA1Ny43OTEgNTMuNzkxIDU2IDU2IDU2SDY4QzcwLjIwOSA1NiA3MiA1Ny43OTEgNzIgNjBWNzJDNzIgNzQuMjA5IDcwLjIwOSA3NiA2OCA3Nkg1NkM1My43OTEgNzYgNTIgNzQuMjA5IDUyIDcyVjYwWiIgZmlsbD0iI0ZGRkZGRiIvPjwvc3ZnPg=="
+                  handlePhotoCapture(placeholderImage)
+                  setIsCameraOpen(false)
+                }}
+              >
+                Continue without photo
+              </Button>
+            </div>
+          ),
+          duration: 10000,
+        })
+      }
+    }, 5000)
   }
 
   const handlePhotoCapture = async (imageData: string) => {
@@ -176,7 +204,7 @@ export default function BeerCounter() {
 
       // Clear animation after delay
       setTimeout(() => {
-        setAnimations((prev) => ({ ...prev, [selectedPerson as string]: false }))
+        setAnimations((prev) => ({ ...prev, [selectedPerson as string]: false })\
       }, 1000)
     }
   }
@@ -657,9 +685,9 @@ export default function BeerCounter() {
                                 i === 0 ? (
                                   curr
                                 ) : i === dailyLeaders.length - 1 ? (
-                                  <>
+                                  <React.Fragment key={`${prev} and ${curr}`}>
                                     {prev} and {curr}
-                                  </>
+                                  </React.Fragment>
                                 ) : (
                                   <>
                                     {prev}, {curr}
@@ -719,9 +747,7 @@ export default function BeerCounter() {
                         {allTimeLeaders.length === 0 ? (
                           "No beers yet!"
                         ) : allTimeLeaders.length === 1 ? (
-                          <span className="capitalize">
-                            {allTimeLeaders[0]} is the all-time champion! 🏆 ({allTimeMaxCount})
-                          </span>
+                          <span className="capitalize">{allTimeLeaders[0]} is the all-time champion! 🏆</span>
                         ) : (
                           <span>
                             {allTimeLeaders
@@ -734,9 +760,9 @@ export default function BeerCounter() {
                                 i === 0 ? (
                                   curr
                                 ) : i === allTimeLeaders.length - 1 ? (
-                                  <>
+                                  <React.Fragment key={`${prev} and ${curr}`}>
                                     {prev} and {curr}
-                                  </>
+                                  </React.Fragment>
                                 ) : (
                                   <>
                                     {prev}, {curr}

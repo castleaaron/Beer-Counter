@@ -1,6 +1,6 @@
 "use client"
 
-import { useRef, useState, useCallback } from "react"
+import { useRef, useState, useEffect } from "react"
 import { Camera, FlipHorizontal, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
@@ -19,12 +19,16 @@ export function CameraCapture({ onCapture, isOpen, onClose }: CameraCaptureProps
   const [facingMode, setFacingMode] = useState<"user" | "environment">("environment")
   const [error, setError] = useState<string | null>(null)
 
-  const startCamera = useCallback(async () => {
+  const startCamera = async () => {
     try {
+      console.log("Starting camera with facing mode:", facingMode)
+
+      // Stop any existing stream
       if (stream) {
         stream.getTracks().forEach((track) => track.stop())
       }
 
+      // Request camera access
       const newStream = await navigator.mediaDevices.getUserMedia({
         video: {
           facingMode,
@@ -46,23 +50,24 @@ export function CameraCapture({ onCapture, isOpen, onClose }: CameraCaptureProps
       setError(null)
     } catch (err) {
       console.error("Error accessing camera:", err)
+      console.error("Camera error details:", JSON.stringify(err))
       setError("Could not access camera. Please ensure you've granted camera permissions.")
     }
-  }, [facingMode, stream])
+  }
 
-  const stopCamera = useCallback(() => {
+  const stopCamera = () => {
     if (stream) {
       stream.getTracks().forEach((track) => track.stop())
       setStream(null)
     }
     setIsCameraReady(false)
-  }, [stream])
+  }
 
   const toggleCamera = () => {
     setFacingMode((prev) => (prev === "user" ? "environment" : "user"))
   }
 
-  const capturePhoto = useCallback(() => {
+  const capturePhoto = () => {
     if (videoRef.current && canvasRef.current && isCameraReady) {
       const video = videoRef.current
       const canvas = canvasRef.current
@@ -89,10 +94,10 @@ export function CameraCapture({ onCapture, isOpen, onClose }: CameraCaptureProps
         onClose()
       }
     }
-  }, [isCameraReady, onCapture, onClose, stopCamera])
+  }
 
-  // Start camera when dialog opens
-  useState(() => {
+  // Start camera when dialog opens and stop when it closes
+  useEffect(() => {
     if (isOpen) {
       startCamera()
     } else {
@@ -102,7 +107,7 @@ export function CameraCapture({ onCapture, isOpen, onClose }: CameraCaptureProps
     return () => {
       stopCamera()
     }
-  })
+  }, [isOpen, facingMode])
 
   return (
     <Dialog
@@ -111,8 +116,6 @@ export function CameraCapture({ onCapture, isOpen, onClose }: CameraCaptureProps
         if (!open) {
           stopCamera()
           onClose()
-        } else {
-          startCamera()
         }
       }}
     >
