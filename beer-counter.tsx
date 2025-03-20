@@ -81,6 +81,33 @@ export default function BeerCounter() {
     })
   }
 
+  // Open passcode prompt for admin mode
+  const openPasscodePrompt = () => {
+    if(isAdminMode) {
+      setIsAdminMode(false)
+      toast({
+        title: "Admin Mode Deactivated",
+        description: "You no longer have access to administrative functions.",
+      })
+      return
+    }
+    const passcode = prompt("Enter the admin passcode:")
+    if (passcode === "admin123") {
+      setIsAdminMode(true)
+      toast({
+        title: "Admin Mode Activated",
+        description: "You now have access to administrative functions.",
+      })
+    } else {
+      setIsAdminMode(false)
+      toast({
+        title: "Access Denied",
+        description: "Incorrect passcode. You do not have access to administrative functions.",
+        variant: "destructive",
+      })
+    }
+  }
+
   // Check for admin mode activation
   const handleEmojiTap = () => {
     const currentTime = new Date().getTime()
@@ -96,6 +123,7 @@ export default function BeerCounter() {
 
     // Check if we should enter admin mode
     if (emojiTapCount + 1 === 5) {
+      openPasscodePrompt();
       setIsAdminMode((prev) => {
         const newMode = !prev
         toast({
