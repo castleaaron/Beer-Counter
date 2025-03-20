@@ -204,7 +204,7 @@ export default function BeerCounter() {
 
       // Clear animation after delay
       setTimeout(() => {
-        setAnimations((prev) => ({ ...prev, [selectedPerson as string]: false })\
+        setAnimations((prev) => ({ ...prev, [selectedPerson as string]: false }))
       }, 1000)
     }
   }
