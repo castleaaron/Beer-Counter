@@ -165,6 +165,52 @@ export async function getDrinkPhotos(): Promise<DrinkPhoto[]> {
   }
 }
 
+export async function editAllTimeCount(person: Person, newCount: number): Promise<BeerCountsResponse> {
+  try {
+    const client = await clientPromise
+    const db = client.db("beer-counter")
+    const today = getTodayDate()
+
+    // Update the person's all-time count
+    await db.collection("counters").updateOne({ name: person }, { $set: { count: newCount } })
+
+    // Update last action
+    await db
+      .collection("lastAction")
+      .updateOne({ id: "last" }, { $set: { person, canUndo: true, daily: false } }, { upsert: true })
+
+    // Return updated counts
+    return await getBeerCounts()
+  } catch (error) {
+    console.error(`Error editing all-time count for ${person}:`, error)
+    throw new Error(`Failed to edit all-time count for ${person}`)
+  }
+}
+
+export async function editDailyCount(person: Person, newCount: number): Promise<BeerCountsResponse> {
+  try {
+    const client = await clientPromise
+    const db = client.db("beer-counter")
+    const today = getTodayDate()
+
+    // Update the person's daily count
+    await db.collection("dailyCounters").updateOne({ name: person, date: today }, { $set: { count: newCount } })
+
+    // Update last action
+    await db
+      .collection("lastAction")
+      .updateOne({ id: "last" }, { $set: { person, canUndo: true, daily: true } }, { upsert: true })
+
+    // Return updated counts
+    return await getBeerCounts()
+  }
+  catch (error) {
+    console.error(`Error editing daily count for ${person}:`, error)
+    throw new Error(`Failed to edit daily count for ${person}`)
+  }
+}
+
+
 // Add a new user to the system
 export async function addUser(name: string): Promise<BeerCountsResponse> {
   try {

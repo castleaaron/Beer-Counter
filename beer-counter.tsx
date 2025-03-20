@@ -124,16 +124,6 @@ export default function BeerCounter() {
     // Check if we should enter admin mode
     if (emojiTapCount + 1 === 5) {
       openPasscodePrompt();
-      setIsAdminMode((prev) => {
-        const newMode = !prev
-        toast({
-          title: newMode ? "Admin Mode Activated" : "Admin Mode Deactivated",
-          description: newMode
-            ? "Administrative functions are now available."
-            : "Administrative functions are now hidden.",
-        })
-        return newMode
-      })
       setEmojiTapCount(0)
     }
   }
@@ -148,7 +138,7 @@ export default function BeerCounter() {
         setAllUsers(data.allUsers)
         setLastAction(data.lastAction)
         setCanUndo(data.canUndo)
-        setToday(data.today)
+        sestToday(data.today)
       } catch (error) {
         toast({
           title: "Error loading data",
